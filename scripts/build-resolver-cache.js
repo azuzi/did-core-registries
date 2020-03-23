@@ -7,6 +7,19 @@ let focusedMethods = require("../tests/focusedMethods");
 const methodsForTest = getMethodsForTest(focusedMethods);
 
 const unresolveable = [];
+let didTest = (dID) => {
+  let boo = false;
+  try {
+    const file = fs.readFileSync(
+      path.resolve(__dirname, `../test-dids/${dID}.json`)
+    );
+    const document = JSON.parse(file.toString());
+    boo = document != null && typeof document.id === "string";
+  } catch (e) {
+    boo = false;
+  }
+  return boo;
+}
 
 // Run locally before push to decrease build time.
 const buildResolverCache = methodsForTest => {
@@ -15,25 +28,23 @@ const buildResolverCache = methodsForTest => {
       let exists = false;
 
       try {
-        try {
-          const file = fs.readFileSync(
-            path.resolve(__dirname, `../test-dids/${did}.json`)
-          );
-          const document = JSON.parse(file.toString());
-          exists = document != null && typeof document.id === "string";
-        } catch (e) {
-          exists = false;
-        }
-
+        exists = didTest(did);
         if (!exists) {
           // assume unresolvable...
           unresolveable.push(did);
           console.info("downloading: ", did);
           const cmd = `
-          curl -s --max-time 10 https://uniresolver.io/1.0/identifiers/${did} | jq ".didDocument" > ./test-dids/${did}.json;
+          curl -s --max-time 10 http://localhost:8080/1.0/identifiers/${did} | jq ".didDocument" > ./test-dids/${did}.json;
         `;
           shell.config.silent = false;
           shell.exec(cmd);
+          exists = didTest(unresolveable[unresolveable.length - 1]);
+          if (exists) {
+            console.info(did, " is valid json, skipping.");
+            unresolveable.pop();
+          } else {
+            console.info(did, " is Invalid");
+          }
         } else {
           console.info(did, " is valid json, skipping.");
         }
