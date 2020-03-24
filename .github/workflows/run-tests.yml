@@ -22,6 +22,10 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm install
+      - run: npm run build-resolver-cache
       - run: npm run test ${{ matrix.test-suite }}
         env:
           CI: true
+          DOCKER_USERNAME: ${{secrets.DOCKER_USERNAME}}
+          DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
+          CONTAINER_TAG: azuzi/did-core-registry:latest
