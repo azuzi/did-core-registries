@@ -1,4 +1,4 @@
-let focusedMethods = ["stack", "web", "ccp", "btcr", "sov", "ethr", "jolo", "kilt", "evan"]
+let focusedMethods = ["web"]
 
 if (process.env.DID_METHOD) {
   focusedMethods.push(process.env.DID_METHOD);
