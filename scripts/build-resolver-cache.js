@@ -34,7 +34,7 @@ const buildResolverCache = methodsForTest => {
           unresolveable.push(did);
           console.info("downloading: ", did);
           const cmd = `
-          curl -s --max-time 10 http://localhost:8080/1.0/identifiers/${did} | jq ".didDocument" > ./test-dids/${did}.json;
+          curl -s --max-time 10 https://uniresolver.io/1.0/identifiers/${did} | jq ".didDocument" > ./test-dids/${did}.json;
         `;
           shell.config.silent = false;
           shell.exec(cmd);
